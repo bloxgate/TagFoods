@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "package": "com.bloxgaming.tagfoods.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "tagfoods.refmap.json",
+  "mixins": [
+    "MixinTag"
+  ],
+  "minVersion": "0.8"
+}

@@ -16,7 +16,7 @@ apply plugin: 'kotlin'
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'com.bloxgaming'
-version = '0.0.1'
+version = '1.0.0'
 archivesBaseName = 'tagfoods'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
@@ -173,6 +173,7 @@ dependencies {
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     from "LICENSE"
+    from "icon.png"
     manifest {
         attributes([
                 "Specification-Title"     : "tagfoods",

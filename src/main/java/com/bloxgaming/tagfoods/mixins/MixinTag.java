@@ -1,8 +1,8 @@
 package com.bloxgaming.tagfoods.mixins;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.item.Item;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.SetTag;
+import net.minecraft.world.item.Item;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,18 +12,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 import java.util.Set;
 
-@Mixin(Tag.class)
+@Mixin(SetTag.class)
 public class MixinTag<T extends Item> {
     @Shadow
-    private ImmutableList<T> immutableContents;
+    private ImmutableList<T> valuesList;
 
     @Shadow
-    public Set<T> contents;
+    public Set<T> values;
 
-    @Inject(at = @At("HEAD"), method = "getAllElements()Ljava/util/List;")
+    @Inject(at = @At("HEAD"), method = "getValues()Ljava/util/List;")
     private void getAllElements(CallbackInfoReturnable<List<T>> callback) {
-        if (contents.size() != immutableContents.size()) {
-            immutableContents = ImmutableList.copyOf(contents);
+        if (values.size() != valuesList.size()) {
+            valuesList = ImmutableList.copyOf(values);
         }
     }
 }

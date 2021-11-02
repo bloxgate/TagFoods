@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.+', changing: true
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
     }
@@ -171,7 +171,7 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.17.1-37.0.58'
+    minecraft 'net.minecraftforge:forge:1.17.1-37.0.104'
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
@@ -191,11 +191,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    //todo: switch back to this when Kotlin for Forge for 1.17.1 is out
-    //implementation 'thedarkcolour:kotlinforforge:1.14.0'
-
-    //todo: remove this once mixins are in forge 1.17.1
-    implementation name: '_MixinBootstrap-1.1.0'
+    implementation 'thedarkcolour:kotlinforforge:2.0.1'
 
     //Add JEI to allow search by tags at runtime
     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")

@@ -42,10 +42,10 @@ curseforge {
         addGameVersion '1.17.1'
 
         mainArtifact(jar) {
-            releaseType = 'beta'
+            displayName = "TagFoods v$project.version"
+            releaseType = 'release'
             relations {
                 requiredDependency 'kotlin-for-forge'
-                requiredDependency 'mixinbootstrap'
                 optionalDependency 'jei'
             }
         }

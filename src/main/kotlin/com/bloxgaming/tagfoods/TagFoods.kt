@@ -1,26 +1,24 @@
 package com.bloxgaming.tagfoods
 
-import net.minecraft.item.Item
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
-import net.minecraft.tags.Tag
-import net.minecraft.tags.TagRegistry
-import net.minecraft.util.ResourceLocation
+import net.minecraft.tags.SetTag
+import net.minecraft.tags.StaticTagHelper
+import net.minecraft.world.item.Item
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.Tags
 import net.minecraftforge.event.TagsUpdatedEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.ExtensionPoint
+import net.minecraftforge.fml.IExtensionPoint
 import net.minecraftforge.fml.ModLoadingContext
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent
-import net.minecraftforge.fml.network.FMLNetworkConstants
+import net.minecraftforge.fmllegacy.network.FMLNetworkConstants
+import net.minecraftforge.fmlserverevents.FMLServerStartedEvent
 import net.minecraftforge.registries.ForgeRegistries
-import org.apache.commons.lang3.tuple.Pair
 import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import thedarkcolour.kotlinforforge.forge.MOD_CONTEXT
-import java.util.function.BiPredicate
-import java.util.function.Supplier
 
 
 const val MODID = "tagfoods"
@@ -28,49 +26,63 @@ const val MODID = "tagfoods"
 @Mod(MODID)
 class TagFoods {
 
-    init {
-        MOD_CONTEXT.getKEventBus().register(this)
-        MinecraftForge.EVENT_BUS.register(this)
-
-        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST) { Pair.of(Supplier { FMLNetworkConstants.IGNORESERVERONLY }, BiPredicate { _: String?, _: Boolean? -> true }) }
+    companion object {
+        private lateinit var logger: Logger
+        private lateinit var foodTag: Tags.IOptionalNamedTag<Item>
     }
 
-    lateinit var foodTag: Tags.IOptionalNamedTag<Item>
-    val logger = LogManager.getLogger()
+    init {
+        logger = LogManager.getLogger()
+
+        MOD_CONTEXT.getKEventBus().register(this)
+        MinecraftForge.EVENT_BUS.register(EventBusEvents)
+
+        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest::class.java) {
+            IExtensionPoint.DisplayTest(
+                { FMLNetworkConstants.IGNORESERVERONLY },
+                { _: String?, _: Boolean? -> true }
+            )
+        }
+    }
 
     @SubscribeEvent
     fun onCommonSetup(event: FMLCommonSetupEvent) {
         foodTag = ItemTags.createOptional(ResourceLocation("forge", "foods"))
     }
 
-    fun updateFoodsTag(items: Collection<Item>) {
-        logger.info("Updating foods tag")
-        val origContents = ((foodTag as TagRegistry.NamedTag<Item>).tag as Tag<Item>).contents
-        //While not required to be immutable, it appears the Set chosen for contents is an immutable one
-        //So we need to make a new copy
-        val newContents = mutableSetOf<Item>()
+    private object EventBusEvents {
+        @SuppressWarnings("unchecked") //We know that casting foodTag to Wrapper<Item> is safe here
+        //Ideally we'd cast right to OptionalNamedTag<Item>, but I couldn't get the Access Transformer to actually make
+        // that public
+        fun updateFoodsTag(items: Collection<Item>) {
+            logger.info("Updating foods tag")
+            val origContents = ((foodTag as StaticTagHelper.Wrapper<Item>).tag as SetTag<Item>).values
+            //While not required to be immutable, it appears the Set chosen for contents is an immutable one
+            //So we need to make a new copy
+            val newContents = mutableSetOf<Item>()
 
-        origContents.forEach {
-            newContents += it
-        }
-        items.forEach {
-            if (it.isFood) {
+            origContents.forEach {
                 newContents += it
             }
+            items.filter { !origContents.contains(it) }.forEach {
+                if (it.isEdible) {
+                    newContents += it
+                }
+            }
+
+            ((foodTag as StaticTagHelper.Wrapper<Item>).tag as SetTag<Item>).values = newContents
+            logger.info("Success! Tagged ${newContents.size} foods.")
+            logger.debug("Foods entries: ${foodTag.values}")
         }
 
-        ((foodTag as TagRegistry.NamedTag<Item>).tag as Tag<Item>).contents = newContents
-        logger.info("Success! Tagged ${newContents.size} foods.")
-        logger.debug("Foods entries: ${foodTag.allElements}")
-    }
+        @SubscribeEvent
+        fun onServerStartedEvent(event: FMLServerStartedEvent) {
+            updateFoodsTag(ForgeRegistries.ITEMS.values)
+        }
 
-    @SubscribeEvent
-    fun onServerStartedEvent(event: FMLServerStartedEvent) {
-        updateFoodsTag(ForgeRegistries.ITEMS.values)
-    }
-
-    @SubscribeEvent
-    fun onTagsUpdatedEvent(event: TagsUpdatedEvent) {
-        updateFoodsTag(ForgeRegistries.ITEMS.values)
+        @SubscribeEvent
+        fun onTagsUpdatedEvent(event: TagsUpdatedEvent) {
+            updateFoodsTag(ForgeRegistries.ITEMS.values)
+        }
     }
 }

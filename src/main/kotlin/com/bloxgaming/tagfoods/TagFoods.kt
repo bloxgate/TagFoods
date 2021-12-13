@@ -8,13 +8,13 @@ import net.minecraft.world.item.Item
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.Tags
 import net.minecraftforge.event.TagsUpdatedEvent
+import net.minecraftforge.event.server.ServerStartedEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.IExtensionPoint
 import net.minecraftforge.fml.ModLoadingContext
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
-import net.minecraftforge.fmllegacy.network.FMLNetworkConstants
-import net.minecraftforge.fmlserverevents.FMLServerStartedEvent
+import net.minecraftforge.network.NetworkConstants
 import net.minecraftforge.registries.ForgeRegistries
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -39,7 +39,7 @@ class TagFoods {
 
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest::class.java) {
             IExtensionPoint.DisplayTest(
-                { FMLNetworkConstants.IGNORESERVERONLY },
+                { NetworkConstants.IGNORESERVERONLY },
                 { _: String?, _: Boolean? -> true }
             )
         }
@@ -76,7 +76,7 @@ class TagFoods {
         }
 
         @SubscribeEvent
-        fun onServerStartedEvent(event: FMLServerStartedEvent) {
+        fun onServerStartedEvent(event: ServerStartedEvent) {
             updateFoodsTag(ForgeRegistries.ITEMS.values)
         }
 

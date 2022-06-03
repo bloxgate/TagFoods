@@ -64,7 +64,7 @@ modrinth {
     versionNumber = "$project.version"
     versionName = "TagFoods v$project.version"
     versionType = "release"
-    uploadFile = "jar"
+    uploadFile = jar
     gameVersions = ['1.18.2']
     changelog = file('changes.md').text
     dependencies {

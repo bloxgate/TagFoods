@@ -2,11 +2,9 @@ package com.bloxgaming.tagfoods
 
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
-import net.minecraft.tags.SetTag
-import net.minecraft.tags.StaticTagHelper
+import net.minecraft.tags.TagKey
 import net.minecraft.world.item.Item
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.common.Tags
 import net.minecraftforge.event.TagsUpdatedEvent
 import net.minecraftforge.event.server.ServerStartedEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -28,7 +26,7 @@ class TagFoods {
 
     companion object {
         private lateinit var logger: Logger
-        private lateinit var foodTag: Tags.IOptionalNamedTag<Item>
+        private lateinit var foodTag: TagKey<Item>
     }
 
     init {
@@ -47,18 +45,15 @@ class TagFoods {
 
     @SubscribeEvent
     fun onCommonSetup(event: FMLCommonSetupEvent) {
-        foodTag = ItemTags.createOptional(ResourceLocation("forge", "foods"))
+        foodTag = ItemTags.create(ResourceLocation("forge", "foods"))
     }
 
     private object EventBusEvents {
-        @SuppressWarnings("unchecked") //We know that casting foodTag to Wrapper<Item> is safe here
-        //Ideally we'd cast right to OptionalNamedTag<Item>, but I couldn't get the Access Transformer to actually make
-        // that public
+        @SuppressWarnings("unchecked") //Our cast is safe, since we're applying a mixin to the base Holder.Reference class
         fun updateFoodsTag(items: Collection<Item>) {
             logger.info("Updating foods tag")
-            val origContents = ((foodTag as StaticTagHelper.Wrapper<Item>).tag as SetTag<Item>).values
-            //While not required to be immutable, it appears the Set chosen for contents is an immutable one
-            //So we need to make a new copy
+            val origContents = ForgeRegistries.ITEMS.tags()?.getTag(foodTag)?.stream()?.toList() ?: throw Exception("Unable to get food tag")
+            //The list returned by toList is an unmodifiable collection, so we have to copy it
             val newContents = mutableSetOf<Item>()
 
             origContents.forEach {
@@ -70,9 +65,31 @@ class TagFoods {
                 }
             }
 
-            ((foodTag as StaticTagHelper.Wrapper<Item>).tag as SetTag<Item>).values = newContents
-            logger.info("Success! Tagged ${newContents.size} foods.")
-            logger.debug("Foods entries: ${foodTag.values}")
+            //We must make sure that we add this tag to each item, so that holder.is(...) checks are true
+            newContents.forEach {
+                (it.builtInRegistryHolder() as IHolderWithModifiableTag<Item>).addTag(foodTag)
+            }
+
+            //We can't access-transformer the ForgeRegistryTag class, so we need to use reflection here
+            val tag = ForgeRegistries.ITEMS.tags()?.getTag(foodTag)!!
+            val forgeRegistryTag = Class.forName("net.minecraftforge.registries.ForgeRegistryTag")
+            val contents = forgeRegistryTag.getDeclaredField("contents")
+            if (!contents.canAccess(tag)) {
+                val accessible = contents.trySetAccessible()
+                if (!accessible) {
+                    logger.warn("Unable to change access modifier on ForgeRegistryTag contents")
+                    return
+                }
+            }
+            if (!forgeRegistryTag.isInstance(tag)) {
+                logger.warn("Food tag is not a ForgeRegistryTag, update aborted.")
+                return
+            }
+            contents.set(tag, newContents.toList())
+
+            val replacedContents = tag.stream().toList()
+            logger.info("Success! Tagged ${replacedContents.size} foods.")
+            logger.debug("Foods entries: $replacedContents")
         }
 
         @SubscribeEvent

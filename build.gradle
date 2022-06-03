@@ -12,6 +12,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21"
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
+        classpath group: 'com.modrinth.minotaur', name: 'Minotaur', version: '2.+'
     }
 }
 
@@ -19,6 +20,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'kotlin'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: "com.matthewprenger.cursegradle"
+apply plugin: "com.modrinth.minotaur"
 apply from: 'https://raw.githubusercontent.com/thedarkcolour/KotlinForForge/site/thedarkcolour/kotlinforforge/gradle/kff-3.3.2.gradle'
 
 group = 'com.bloxgaming'
@@ -53,6 +55,20 @@ curseforge {
     }
     options {
         detectNewerJava = true
+    }
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN") ?: "no-modrinth-token"
+    projectId = "AHIqijE1"
+    versionNumber = "$project.version"
+    versionName = "TagFoods v$project.version"
+    versionType = "release"
+    uploadFile = "jar"
+    gameVersions = ['1.18.2']
+    changelog = file('changes.md').text
+    dependencies {
+        required.project("ordsPcFz")
     }
 }
 

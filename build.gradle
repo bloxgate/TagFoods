@@ -40,7 +40,7 @@ curseforge {
         changelogType = 'markdown'
         changelog = file('changes.md')
         releaseType = 'release'
-        addGameVersion '1.18'
+        addGameVersion '1.18.2'
 
         mainArtifact(jar) {
             displayName = "TagFoods v$project.version"
@@ -50,6 +50,9 @@ curseforge {
                 optionalDependency 'jei'
             }
         }
+    }
+    options {
+        detectNewerJava = true
     }
 }
 

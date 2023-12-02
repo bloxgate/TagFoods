@@ -25,3 +25,7 @@ jobs:
       run: |
         chmod a+x ./gradlew
         ./gradlew curseforge
+    - uses: actions/upload-artifact@v3
+      with:
+        name: output-jar
+        path: ${{ github.workspace }}/build/libs/*.jar

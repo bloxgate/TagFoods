@@ -16,7 +16,7 @@ import java.util.Set;
 public class MixinHolder<T extends Item> implements IHolderWithModifiableTag<T> {
 
     @Shadow
-    private Set<TagKey<T>> tags;
+    public Set<TagKey<T>> tags;
 
     public void addTag(@NotNull TagKey<T> tag) {
         //Tags will be immutable at runtime

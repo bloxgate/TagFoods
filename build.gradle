@@ -51,6 +51,8 @@ minecraft {
     mappings channel: 'official', version: '1.18.2'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
     runs {
@@ -155,6 +157,7 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.18.2-40.1.25'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
@@ -176,8 +179,6 @@ dependencies {
 
     //Add JEI to allow search by tags at runtime
     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
-
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

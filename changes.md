@@ -1,3 +1,3 @@
-Version 1.2.1:
+Version 1.2.2:
 
-* 1.18.2 support
+* Fix for broken jar on CurseForge

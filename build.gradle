@@ -55,6 +55,7 @@ curseforge {
     }
     options {
         detectNewerJava = true
+        forgeGradleIntegration = true
     }
 }
 

@@ -2,9 +2,7 @@ name: Publish to CurseForge
 
 on:
   push:
-    branches:
-      - main
-      - dev
+    branches: [ main ]
     paths:
     - 'src/main/**/*'
     - 'changes.md'

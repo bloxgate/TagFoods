@@ -1,3 +1,3 @@
-Version 1.2.2:
+Version 1.2.3:
 
-* Fix for broken jar on CurseForge
+* Fix jar not being obfuscated due to Gradle issues

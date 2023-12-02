@@ -25,7 +25,7 @@ apply plugin: "com.modrinth.minotaur"
 apply from: 'https://raw.githubusercontent.com/thedarkcolour/KotlinForForge/site/thedarkcolour/kotlinforforge/gradle/kff-3.3.2.gradle'
 
 group = 'com.bloxgaming'
-version = '1.2.2'
+version = '1.2.3'
 archivesBaseName = 'tagfoods'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -226,7 +226,6 @@ curseforge {
     options {
         detectNewerJava = true
         forgeGradleIntegration = true
-        debug = true
     }
 }
 

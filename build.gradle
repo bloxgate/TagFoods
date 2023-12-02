@@ -36,44 +36,6 @@ mixin {
     add sourceSets.main, "tagfoods.refmap.json"
 }
 
-curseforge {
-    apiKey = System.getenv("CURSEFORGE_API_KEY") ?: "no-api-key"
-    project {
-        id = '504465'
-        changelogType = 'markdown'
-        changelog = file('changes.md')
-        releaseType = 'release'
-        addGameVersion '1.18.2'
-
-        mainArtifact(jar) {
-            displayName = "TagFoods v$project.version"
-            releaseType = 'release'
-            relations {
-                requiredDependency 'kotlin-for-forge'
-                optionalDependency 'jei'
-            }
-        }
-    }
-    options {
-        detectNewerJava = true
-        forgeGradleIntegration = true
-    }
-}
-
-modrinth {
-    token = System.getenv("MODRINTH_TOKEN") ?: "no-modrinth-token"
-    projectId = "AHIqijE1"
-    versionNumber = "$project.version"
-    versionName = "TagFoods v$project.version"
-    versionType = "release"
-    uploadFile = jar
-    gameVersions = ['1.18.2']
-    changelog = file('changes.md').text
-    dependencies {
-        required.project("ordsPcFz")
-    }
-}
-
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
     // Channel:   Version:
@@ -237,3 +199,42 @@ jar {
 }
 
 jar.finalizedBy('reobfJar')
+
+curseforge {
+    apiKey = System.getenv("CURSEFORGE_API_KEY") ?: "no-api-key"
+    project {
+        id = '504465'
+        changelogType = 'markdown'
+        changelog = file('changes.md')
+        releaseType = 'release'
+        addGameVersion '1.18.2'
+
+        mainArtifact(jar) {
+            displayName = "TagFoods v$project.version"
+            releaseType = 'release'
+            relations {
+                requiredDependency 'kotlin-for-forge'
+                optionalDependency 'jei'
+            }
+        }
+    }
+    options {
+        detectNewerJava = true
+        forgeGradleIntegration = true
+        debug = true
+    }
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN") ?: "no-modrinth-token"
+    projectId = "AHIqijE1"
+    versionNumber = "$project.version"
+    versionName = "TagFoods v$project.version"
+    versionType = "release"
+    uploadFile = jar
+    gameVersions = ['1.18.2']
+    changelog = file('changes.md').text
+    dependencies {
+        required.project("ordsPcFz")
+    }
+}

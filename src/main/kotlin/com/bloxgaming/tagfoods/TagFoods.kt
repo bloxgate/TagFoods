@@ -1,5 +1,7 @@
 package com.bloxgaming.tagfoods
 
+import com.google.common.collect.ImmutableList
+import net.minecraft.core.Holder
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
 import net.minecraft.tags.TagKey
@@ -86,6 +88,23 @@ class TagFoods {
                 return
             }
             contents.set(tag, newContents.toList())
+
+            val holderSet = forgeRegistryTag.getDeclaredField("holderSet")
+            if (!holderSet.canAccess(tag)) {
+                val accessible = holderSet.trySetAccessible()
+                if (!accessible) {
+                    logger.warn("Unable to change access modifier on ForgeRegistryTag holderSet")
+                    return
+                }
+            }
+            val actualHolderSet = holderSet.get(tag) as? IHolderSetNamedWithModifiableContents<Item>
+            if (actualHolderSet == null) {
+                logger.warn("Could not get holderSet")
+                return
+            }
+            newContents.forEach {
+                actualHolderSet.add(it.builtInRegistryHolder())
+            }
 
             val replacedContents = tag.stream().toList()
             logger.info("Success! Tagged ${replacedContents.size} foods.")

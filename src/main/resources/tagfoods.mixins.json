@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "tagfoods.refmap.json",
   "mixins": [
-    "MixinHolder"
+    "MixinHolder",
+    "MixinHolderSet"
   ],
   "minVersion": "0.8"
 }

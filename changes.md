@@ -1,3 +1,3 @@
-Version 1.2.3:
+Version 1.3.0:
 
-* Fix jar not being obfuscated due to Gradle issues
+* Support for 1.20.1
